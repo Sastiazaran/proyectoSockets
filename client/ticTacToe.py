@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from random import randint
 from button import Button
+import time
 import socket
 
 """
@@ -20,8 +21,9 @@ CELL_SIZE = WINDOW_SIZE // 3
 BG = pg.image.load('./client/resources/Background.png')
 INF = float('inf')
 vec2 = pg.math.Vector2
-
 CELL_CENTER = vec2(CELL_SIZE / 2)
+
+stopTime = False
 
 #################################################################################################
 #################################################################################################
@@ -60,15 +62,17 @@ class TicTacToe:
                                    vec2(line_indices[2][::-1]) * CELL_SIZE + CELL_CENTER]
 
     def runGameProcesss(self):
-        currentCell = vec2(pg.mouse.get_pos()) // CELL_SIZE
-        col, row = map(int, currentCell)
-        leftClick = pg.mouse.get_pressed()[0]
-
-        if leftClick and self.gameArray[row][col] == INF and not self.winner:
-            self.gameArray[row][col] = self.player
-            self.player = not self.player
-            self.gameSteps += 1
-            self.checkWinner()
+        global stopTime
+        if stopTime:
+            currentCell = vec2(pg.mouse.get_pos()) // CELL_SIZE
+            col, row = map(int, currentCell)
+            leftClick = pg.mouse.get_pressed()[0]
+            
+            if leftClick and self.gameArray[row][col] == INF and not self.winner:
+                self.gameArray[row][col] = self.player
+                self.player = not self.player
+                self.gameSteps += 1
+                self.checkWinner()
 
     def drawObjects(self):
         for y, row in enumerate(self.gameArray):
@@ -101,11 +105,10 @@ class TicTacToe:
             pg.display.set_caption(f'Game Tied! Press space to restart')
     
     def run(self):
-        game.screen.fill("white")
         self.printCaption()
         self.draw()
         self.runGameProcesss()
-
+        
 #################################################################################################
 #################################################################################################
 #################################################################################################
@@ -156,11 +159,11 @@ class Game:
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
-                        Game.run(self)
+                        Game.manager(self)
 
             pg.display.update()
 
-    def run(self):
+    def manager(self):
         while True:
             game.screen.blit(BG, (0, 0))
 
@@ -188,10 +191,30 @@ class Game:
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                        self.tictactoe.run()
-                        self.checkEvents()
-                        pg.display.update()
-                        self.clock.tick(60)
+                        while True:
+                            global stopTime
+                            game.screen.fill("white")
+                            self.tictactoe.run()
+                            if stopTime == False:
+                                time.sleep(1)
+                                stopTime = True
+                            self.checkEvents()
+                            # OPTIONS_MOUSE_POS = pg.mouse.get_pos()
+                            # OPTIONS_BACK = Button(image=None, pos=(250, 170), 
+                            #     text_input="BACK", font=Game.get_font(30), base_color="Black", hovering_color="Green")
+
+                            # OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+                            # OPTIONS_BACK.update(game.screen)
+
+                            # for event in pg.event.get():
+                            #     if event.type == pg.QUIT:
+                            #         pg.quit()
+                            #         sys.exit()
+                            #     if event.type == pg.MOUSEBUTTONDOWN:
+                            #         if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                            #             Game.run(self)
+                            pg.display.update()
+                            self.clock.tick(60)
                     if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                         Game.options(self)
                     if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
@@ -207,4 +230,4 @@ class Game:
 
 if __name__ == '__main__':
     game = Game()
-    game.run()
+    game.manager()
