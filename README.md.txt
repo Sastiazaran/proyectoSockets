@@ -20,7 +20,7 @@ permite que múltiples usuarios puedan interactuar en tiempo real y jugar juegos
 ---------------------------------------------------------------------------------------------------------------------------------------
 Algunos de los lenguajes en los que nos enfocaremos sera:
 - Python
-- C++
+- C
 - Sockets
 Podriamos utilizar algunos otros sobre la marcha. 
 ----------------------------------------------------------------------------------------------------------------
