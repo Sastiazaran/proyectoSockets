@@ -102,9 +102,9 @@ class TicTacToe:
     def printCaption(self):
         pg.display.set_caption(f'Player "{"OX" [self.player]}" turn')
         if self.winner:
-            pg.display.set_caption(f'Player " {self.winner}" wins! Press space to restart')
+            pg.display.set_caption(f'Player " {self.winner}" wins! Press space to restart or enter to go back')
         elif self.gameSteps == 9:
-            pg.display.set_caption(f'Game Tied! Press space to restart')
+            pg.display.set_caption(f'Game Tied! Press space to restart or enter to go back')
     
     def run(self):
         self.printCaption()
@@ -128,6 +128,7 @@ class Game:
         self.tictactoe = TicTacToe(self)
 
     def checkEvents(self):
+        global stopTime
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -135,21 +136,38 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_SPACE:
                     self.newGame()
+                if event.key == pg.K_RETURN:
+                    stopTime = False
+                    self.newGame()
+                    self.manager()
 
     def get_font(size): # Returns Press-Start-2P in the desired size
         return pg.font.Font("./client/resources/font.ttf", size)
     
-    def options(self):
+    def howToPlay(self):
         while True:
             OPTIONS_MOUSE_POS = pg.mouse.get_pos()
 
             game.screen.fill("white")
 
-            OPTIONS_TEXT = Game.get_font(20).render("This is the OPTIONS WINDOW_SIZE.", True, "Black")
-            OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(250, 100))
-            game.screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
+            OPTIONS_TEXT0 = Game.get_font(30).render("How to play", True, "Black")
+            OPTIONS_TEXT1 = Game.get_font(15).render("Just press the play button", True, "Black")
+            OPTIONS_TEXT2 = Game.get_font(15).render("each player will have one turn", True, "Black")
+            OPTIONS_TEXT3 = Game.get_font(15).render("whoever gets 3 in line", True, "Black")
+            OPTIONS_TEXT4 = Game.get_font(15).render("WINS!", True, "Black")
+            OPTIONS_RECT0 = OPTIONS_TEXT0.get_rect(center=(250, 80))
+            OPTIONS_RECT1 = OPTIONS_TEXT1.get_rect(center=(250, 120))
+            OPTIONS_RECT2 = OPTIONS_TEXT2.get_rect(center=(250, 140))
+            OPTIONS_RECT3 = OPTIONS_TEXT3.get_rect(center=(250, 160))
+            OPTIONS_RECT4 = OPTIONS_TEXT4.get_rect(center=(250, 180))
+            game.screen.blit(OPTIONS_TEXT0, OPTIONS_RECT0)
+            game.screen.blit(OPTIONS_TEXT1, OPTIONS_RECT1)
+            game.screen.blit(OPTIONS_TEXT2, OPTIONS_RECT2)
+            game.screen.blit(OPTIONS_TEXT3, OPTIONS_RECT3)
+            game.screen.blit(OPTIONS_TEXT4, OPTIONS_RECT4)
+            
 
-            OPTIONS_BACK = Button(image=None, pos=(250, 170), 
+            OPTIONS_BACK = Button(image=None, pos=(250, 250), 
                                 text_input="BACK", font=Game.get_font(30), base_color="Black", hovering_color="Green")
 
             OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
@@ -314,7 +332,7 @@ class Game:
                             pg.display.update()
                             self.clock.tick(60)
                     if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                        Game.options(self)
+                        Game.howToPlay(self)
                     if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                         pg.quit()
                         sys.exit()
