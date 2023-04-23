@@ -166,28 +166,51 @@ class Game:
             pg.display.update()
 
     def registerUser(self):
+        global loginToken
+        pg.display.set_caption("Register User")
+        registerMousePos = pg.mouse.get_pos()
+
+        registrationUsernameBox = InputBox(150, 150, 160, 40, "Name")
+        registrationPasswordBox = InputBox(100, 200, 260, 40, "Password")
+        
+        registrationUsernameBox.draw(game.screen)
+        registrationPasswordBox.draw(game.screen)
+        pg.display.flip()
+
         while True:
-            registerMousePos = pg.mouse.get_pos()
-
-            game.screen.fill("white")
-
-            registerText = Game.get_font(20).render("This is the OPTIONS WINDOW_SIZE.", True, "Black")
-            registerRect = registerText.get_rect(center=(250, 100))
-            game.screen.blit(registerText, registerRect)
-
-            registerBack = Button(image=None, pos=(250, 170), 
-                                text_input="BACK", font=Game.get_font(30), base_color="Black", hovering_color="Green")
-
-            registerBack.changeColor(registerMousePos)
-            registerBack.update(game.screen)
-
             for event in pg.event.get():
+                game.screen.blit(BG, (0,0))
+
+                registerText = Game.get_font(40).render("Registration", True, "white")
+                registerRect = registerText.get_rect(center=(250, 100))
+                game.screen.blit(registerText, registerRect)
+
+                registrationUsernameBox.draw(game.screen)
+                registrationPasswordBox.draw(game.screen)
+                registrationUsernameBox.handle_event(event)
+                registrationPasswordBox.handle_event(event)
+
+                registerMousePos = pg.mouse.get_pos()
+                registerSux = Button(image=None, pos=(220, 350), 
+                                    text_input="REGISTER", font=Game.get_font(30), base_color="white", hovering_color="yellow")
+                registerBack = Button(image=None, pos=(220, 400), 
+                                    text_input="BACK", font=Game.get_font(30), base_color="white", hovering_color="yellow")
+
+                registerBack.changeColor(registerMousePos)
+                registerSux.changeColor(registerMousePos)
+
+                registerSux.update(game.screen)
+                registerBack.update(game.screen)
+
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if registerBack.checkForInput(registerMousePos):
                         Game.manager(self)
+                    if registerSux.checkForInput(registerMousePos):
+                        Game.manager(self)
+                        loginToken = True
 
             pg.display.update()
 
@@ -242,8 +265,7 @@ class Game:
                         loginToken = True 
                         Game.manager(self)
             pg.display.update()
-            
-                    
+                            
     def manager(self):
         while True:
             
