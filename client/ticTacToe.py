@@ -25,6 +25,7 @@ vec2 = pg.math.Vector2
 CELL_CENTER = vec2(CELL_SIZE / 2)
 
 stopTime = False
+loginToken = False
 
 #################################################################################################
 #################################################################################################
@@ -164,13 +165,38 @@ class Game:
 
             pg.display.update()
 
+    def registerUser(self):
+        while True:
+            registerMousePos = pg.mouse.get_pos()
+
+            game.screen.fill("white")
+
+            registerText = Game.get_font(20).render("This is the OPTIONS WINDOW_SIZE.", True, "Black")
+            registerRect = registerText.get_rect(center=(250, 100))
+            game.screen.blit(registerText, registerRect)
+
+            registerBack = Button(image=None, pos=(250, 170), 
+                                text_input="BACK", font=Game.get_font(30), base_color="Black", hovering_color="Green")
+
+            registerBack.changeColor(registerMousePos)
+            registerBack.update(game.screen)
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if registerBack.checkForInput(registerMousePos):
+                        Game.manager(self)
+
+            pg.display.update()
+
     def login(self):
-        
         
         pg.display.set_caption("Log in")
         
-        usernameBox = InputBox(150, 150, 150, 40, "Name")
-        passwordBox = InputBox(150, 300, 250, 40, "Password")
+        usernameBox = InputBox(150, 150, 160, 40, "Name")
+        passwordBox = InputBox(100, 200, 260, 40, "Password")
 
         loginRun = True
         
@@ -180,25 +206,53 @@ class Game:
 
         while loginRun:
             for event in pg.event.get():
+                global loginToken
+                loginToken = False
                 game.screen.blit(BG, (0,0))
                 usernameBox.draw(game.screen)
                 passwordBox.draw(game.screen)
                 usernameBox.handle_event(event)
                 passwordBox.handle_event(event)
+
+                registerMousePos = pg.mouse.get_pos()
+                registerText = Game.get_font(40).render("Login", True, "white")
+                registerRect = registerText.get_rect(center=(230, 100))
+                game.screen.blit(registerText, registerRect)
+
+                registerButton = Button(image=None, pos=(240, 300), 
+                                    text_input="REGISTER", font=Game.get_font(30), base_color="white", hovering_color="yellow")
+                loginButton = Button(image=None, pos=(240, 350), 
+                                    text_input="LOG IN", font=Game.get_font(30), base_color="white", hovering_color="yellow")
+                
+                registerButton.changeColor(registerMousePos)
+                registerButton.update(game.screen)
+
+                loginButton.changeColor(registerMousePos)
+                loginButton.update(game.screen)
+
                 pg.display.flip()
 
                 if event.type == pg.QUIT:
                     loginRun = False
                     pg.quit()
-        pg.display.update()
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if registerButton.checkForInput(registerMousePos):
+                        Game.registerUser(self)
+                    if loginButton.checkForInput(registerMousePos):
+                        loginToken = True 
+                        Game.manager(self)
+            pg.display.update()
+            
                     
     def manager(self):
         while True:
             
             #Inicio login
             ##############################
+            global loginToken
             game.screen.blit(BG, (0,0))
-            Game.login(self)
+            if loginToken == False:
+                Game.login(self)
             
             ##############################
             game.screen.blit(BG, (0, 0))
@@ -235,20 +289,6 @@ class Game:
                                 time.sleep(1)
                                 stopTime = True
                             self.checkEvents()
-                            # OPTIONS_MOUSE_POS = pg.mouse.get_pos()
-                            # OPTIONS_BACK = Button(image=None, pos=(250, 170), 
-                            #     text_input="BACK", font=Game.get_font(30), base_color="Black", hovering_color="Green")
-
-                            # OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
-                            # OPTIONS_BACK.update(game.screen)
-
-                            # for event in pg.event.get():
-                            #     if event.type == pg.QUIT:
-                            #         pg.quit()
-                            #         sys.exit()
-                            #     if event.type == pg.MOUSEBUTTONDOWN:
-                            #         if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
-                            #             Game.run(self)
                             pg.display.update()
                             self.clock.tick(60)
                     if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
