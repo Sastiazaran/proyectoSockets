@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from random import randint
 from button import Button
+from login import InputBox
 import time
 import socket
 
@@ -163,8 +164,43 @@ class Game:
 
             pg.display.update()
 
+    def login(self):
+        
+        
+        pg.display.set_caption("Log in")
+        
+        usernameBox = InputBox(150, 150, 150, 40, "Name")
+        passwordBox = InputBox(150, 300, 250, 40, "Password")
+
+        loginRun = True
+        
+        usernameBox.draw(game.screen)
+        passwordBox.draw(game.screen)
+        pg.display.flip()
+
+        while loginRun:
+            for event in pg.event.get():
+                game.screen.blit(BG, (0,0))
+                usernameBox.draw(game.screen)
+                passwordBox.draw(game.screen)
+                usernameBox.handle_event(event)
+                passwordBox.handle_event(event)
+                pg.display.flip()
+
+                if event.type == pg.QUIT:
+                    loginRun = False
+                    pg.quit()
+        pg.display.update()
+                    
     def manager(self):
         while True:
+            
+            #Inicio login
+            ##############################
+            game.screen.blit(BG, (0,0))
+            Game.login(self)
+            
+            ##############################
             game.screen.blit(BG, (0, 0))
 
             MENU_MOUSE_POS = pg.mouse.get_pos()
