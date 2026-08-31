@@ -1,29 +1,58 @@
-class Button():
-	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
-		self.image = image
-		self.x_pos = pos[0]
-		self.y_pos = pos[1]
-		self.font = font
-		self.base_color, self.hovering_color = base_color, hovering_color
-		self.text_input = text_input
-		self.text = self.font.render(self.text_input, True, self.base_color)
-		if self.image is None:
-			self.image = self.text
-		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+from __future__ import annotations
 
-	def update(self, screen):
-		if self.image is not None:
-			screen.blit(self.image, self.rect)
-		screen.blit(self.text, self.text_rect)
+import pygame as pg
 
-	def checkForInput(self, position):
-		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-			return True
-		return False
+from theme import CREAM, SHADOW, VIOLET, VIOLET_HOVER, rounded_rect
 
-	def changeColor(self, position):
-		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-			self.text = self.font.render(self.text_input, True, self.hovering_color)
-		else:
-			self.text = self.font.render(self.text_input, True, self.base_color)
+
+class Button:
+    def __init__(
+        self,
+        pos,
+        text,
+        font,
+        size=(300, 58),
+        fill=VIOLET,
+        fill_hover=VIOLET_HOVER,
+        text_color=CREAM,
+        outline=False,
+    ):
+        self.text_input = text
+        self.font = font
+        self.fill = fill
+        self.fill_hover = fill_hover
+        self.text_color = text_color
+        self.outline = outline
+        self.rect = pg.Rect(0, 0, size[0], size[1])
+        self.rect.center = pos
+        self.hovered = False
+
+    def checkForInput(self, position):
+        return self.rect.collidepoint(position)
+
+    def _label(self, color):
+        return self.font.render(self.text_input, True, color)
+
+    def update(self, screen, mouse_pos=None):
+        if mouse_pos is None:
+            mouse_pos = pg.mouse.get_pos()
+        self.hovered = self.rect.collidepoint(mouse_pos)
+        fill = self.fill_hover if self.hovered else self.fill
+
+        shadow = self.rect.move(0, 5)
+        rounded_rect(screen, SHADOW, shadow, radius=16)
+
+        if self.outline:
+            rounded_rect(screen, (20, 18, 40), self.rect, radius=16)
+            rounded_rect(screen, fill, self.rect, radius=16, width=2)
+            label_color = CREAM if self.hovered else fill
+        else:
+            rounded_rect(screen, fill, self.rect, radius=16)
+            label_color = self.text_color
+
+        label = self._label(label_color)
+        screen.blit(label, label.get_rect(center=self.rect.center))
+
+    # Keep the old name used around the project.
+    def changeColor(self, position):
+        self.hovered = self.rect.collidepoint(position)

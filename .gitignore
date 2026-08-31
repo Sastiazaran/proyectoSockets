@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+
+# Compiled C binaries (keep the .c sources)
+Servidor_Cliente/servidor
+Servidor_Cliente/cliente
+Servidor_Cliente/clienteP
+Servidor_Cliente/clientP
+tests/hash_check
+
+# Runtime account file is generated on first launch if missing
+data/users.txt
+
+.DS_Store
+*.o
